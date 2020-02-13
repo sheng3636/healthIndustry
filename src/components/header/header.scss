@@ -1,0 +1,21 @@
+@import '@/assets/style/mixin.scss';
+.header {
+    height: 64px;
+    font-size: 16px;
+    @include bis('../../assets/images/common/headerBg.png');
+    @include fj(space-between);
+
+    .navLeft,
+    .navRight {
+      line-height: 85px;
+      @include wh(525px, 64px);
+      @include fj(space-around);
+
+      .router-link-active {
+        color: #eddd12;
+      }
+    }
+    .dateTime {
+      width: 175px;
+    }
+  }

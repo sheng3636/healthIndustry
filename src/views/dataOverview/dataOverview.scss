@@ -1,0 +1,76 @@
+@import '@/assets/style/mixin.scss';
+.bottomMain{
+  margin: 25px auto 0 auto;
+  @include wh(1880px, 970px);
+  @include fj(space-between);
+  .mainLeft,
+  .mainRight {
+    flex-direction: column;
+    align-items: flex-start;
+    @include wh(526px, 100%);
+    @include fj(space-between);
+    .divTitle{
+      margin-top: 25px;
+      margin-left: 55px;
+      font-size: 22px;
+      background: linear-gradient(to right, #0072ff, #01aaff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+  }
+
+  .mainLeft {
+    .firstDiv {
+      @include wh(100%, 346px);
+      @include bis('../../assets/images/common/border346.png');
+      #healthDetailChart {
+        height: 265px;
+      }
+    }
+
+    .secondDiv {
+      @include wh(100%, 346px);
+      @include bis('../../assets/images/common/border346.png');
+      #investChart {
+        height: 265px;
+      }
+    }
+
+    .thirdDiv {
+      @include wh(100%, 234px);
+      @include bis('../../assets/images/common/border234.png');
+
+      #investDetailChart {
+        height: 165px;
+      }
+    }
+  }
+
+  .mainRight {
+    .firstDiv {
+      @include wh(100%, 301px);
+      @include bis('../../assets/images/common/border301.png');
+
+      #healthOutputChart {
+        height: 230px;
+      }
+    }
+
+    .secondDiv {
+      @include wh(100%, 301px);
+      @include bis('../../assets/images/common/border301.png');
+      #healthIncrementChart {
+        height: 230px;
+      }
+    }
+
+    .thirdDiv {
+      @include wh(100%, 346px);
+      @include bis('../../assets/images/common/border346.png');
+
+      #healthLocationOutputChart {
+        height: 270px;
+      }
+    }
+  }
+}
