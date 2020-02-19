@@ -10,12 +10,21 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/api': {
+        // target: 'https://www.fastmock.site/mock/20c29f4ede624f70f141bb200397aa12/bigHealth/AuxiliaryPlanning', //前端数据Mock接口   
+        target: 'http://t294k52841.wicp.vip', //后台接口
+        changeOrigin: true, //允许跨域
+        pathRewrite: {
+          '^/api': '' //重写接口
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: false,
+    autoOpenBrowser: true,
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-

@@ -9,7 +9,8 @@
     align-items: flex-start;
     @include wh(526px, 100%);
     @include fj(space-between);
-    .divTitle{
+
+    .divTitle {
       margin-top: 25px;
       margin: 25px 55px 0 55px;
       font-size: 22px;
@@ -27,7 +28,7 @@
     .firstDiv {
       @include wh(100%, 346px);
       @include bis('../../assets/images/common/border346.png');
-      #healthDetailChart {
+      #PersonBedChart {
         height: 265px;
       }
     }
@@ -35,7 +36,7 @@
     .secondDiv {
       @include wh(100%, 346px);
       @include bis('../../assets/images/common/border346.png');
-      #investChart {
+      #personBedThousandChart {
         height: 265px;
       }
     }
@@ -44,8 +45,15 @@
       position: relative;
       @include wh(100%, 234px);
       @include bis('../../assets/images/common/border234.png');
-      #investDetailChart {
-        height: 165px;
+      .chartWrap{
+        display: flex;
+        justify-content: space-between;
+      }
+      #personPercentChart {
+        @include wh(45%,165px);
+      }
+      #bedAllotChart {
+        @include wh(55%, 165px);
       }
     }
   }
@@ -72,17 +80,16 @@
       @include wh(100%, 346px);
       @include bis('../../assets/images/common/border346.png');
 
-      #healthLocationOutputChart {
+      #locationBedChart {
         height: 270px;
       }
     }
   }
   .mainCenter {
-    position: relative;
     width: calc(100% - 526px - 526px);
     height: 100%;
     .centerTop{
-      position: relative;
+      // position: relative;
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -93,10 +100,10 @@
         margin-left: 10px;
       }
       .title{
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        // position: absolute;
+        // left: 50%;
+        // top: 50%;
+        // transform: translate(-50%, -50%);
         font-size: 24px;
       }
     }

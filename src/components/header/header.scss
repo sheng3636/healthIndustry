@@ -1,5 +1,6 @@
 @import '@/assets/style/mixin.scss';
 .header {
+  position: relative;
     height: 64px;
     font-size: 16px;
     @include bis('../../assets/images/common/headerBg.png');
@@ -14,6 +15,11 @@
       .router-link-active {
         color: #eddd12;
       }
+    }
+    .navCenter{
+      position: absolute;
+      right: 640px;
+      bottom: 25px;
     }
     .dateTime {
       width: 175px;
