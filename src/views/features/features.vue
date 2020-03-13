@@ -2,15 +2,15 @@
   <div class="bottomMain">
     <div class="mainLeft">
       <div class="firstDiv">
-        <h3 class="divTitle">省历年医疗人员、床位数量</h3>
+        <h3 class="divTitle"><i>省历年医疗人员、床位数量</i></h3>
         <div id="PersonBedChart"></div>
       </div>
       <div class="secondDiv">
-        <h3 class="divTitle">省历年医疗人员、床位每千人数量</h3>
+        <h3 class="divTitle"><i>省历年医疗人员、床位每千人数量</i></h3>
         <div id="personBedThousandChart"></div>
       </div>
       <div class="thirdDiv">
-        <h3 class="divTitle">年医疗人员占比、床位分配数量分析</h3>
+        <h3 class="divTitle"><i>年医疗人员占比、床位分配数量分析</i></h3>
         <div class="chartWrap">
           <div id="personPercentChart"></div>
           <div id="bedAllotChart"></div>
@@ -20,7 +20,7 @@
     <div class="mainCenter">
       <div class="centerTop">
         <span class="title">医疗人员、床位</span>
-        <el-select class="selectWidth" size="small" v-model="typeVal" value-key="cityName" @change="otherSearch"
+        <el-select class="selectWidth" size="small" v-model="typeVal" value-key="cityName"
           placeholder="请选择类型">
           <el-option v-for="item in typeOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
@@ -39,15 +39,21 @@
     </div>
     <div class="mainRight">
       <div class="firstDiv">
-        <h3 class="divTitle">省健康产业总产出</h3>
-        <div id="healthOutputChart"></div>
+        <h3 class="divTitle"><i>省各地市医生人数占比</i></h3>
+        <div id="healthOutputChart">
+          <span :class="'span' + index" v-for="(item,index) in doctorData.listData" :key="index">{{item.name}}{{(item.value / doctorData.amount).toFixed(1)}}%</span>
+          <span class="span11">全省医生{{doctorData.amount}}人</span>
+        </div>
       </div>
-      <div class="secondDiv">
-        <h3 class="divTitle">省健康产业历年产值增量</h3>
-        <div id="healthIncrementChart"></div>
+      <div class="firstDiv">
+        <h3 class="divTitle"><i>省各地市护士人数占比</i></h3>
+        <div id="healthIncrementChart">
+          <span :class="'span' + index" v-for="(item,index) in nurseData.listData" :key="index">{{item.name}}{{(item.value / nurseData.amount).toFixed(1)}}%</span>
+          <span class="span11">全省护士{{nurseData.amount}}人</span>
+        </div>
       </div>
       <div class="thirdDiv">
-        <h3 class="divTitle"><i>浙江省地市床位占比-</i><span>{{bedTotal}}床</span></h3>
+        <h3 class="divTitle"><i>省各地市床位占比-</i><span>{{bedTotal}}床</span></h3>
         <div id="locationBedChart"></div>
       </div>
     </div>
@@ -67,6 +73,8 @@ export default {
   data() {
     return {
       bedTotal:null,
+      doctorData:{},
+      nurseData:{},
       typeVal: '1',
       typeOpts: [
         {
@@ -95,10 +103,26 @@ export default {
     })
     doctorNurseBedApi().then(res => {
       this.bedTotal = res.data.bed.amount
+      this.doctorData = res.data.doctor
+      this.nurseData = res.data.doctor
       this.locationBedChartFn(res.data.bed.listData)
     })
   },
   methods: {
+    otherSearch() {
+      this.district.setLevel('city') // 行政区级别
+      this.district.setExtensions('all')
+      // 行政区查询
+      // 按照adcode进行查询可以保证数据返回的唯一性
+      this.district.search(this.cityVal.cityCode, (status, result) => {
+        if (status === 'complete') {
+          this.getData(result.districtList[0], 'city', this.cityVal.cityCode)
+        }
+      })
+    },
+    toFixedTwo(data){
+      return data.toFixed(1)
+    },
     // 省历年医疗人员、床位数量chart
     personBedChartFn(data) {
       let charts = this.$echarts.init(document.getElementById('PersonBedChart'))
@@ -555,7 +579,7 @@ export default {
             top: '7%',
             left: '0%',
             width: '72%',
-            height: '85%',
+            height: '89%',
             maxSize: '80%',
             label: {
               position: 'inside',

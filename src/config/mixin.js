@@ -147,23 +147,11 @@ export const mapMixin = {
         }
       })
     },
-    otherSearch() {
-      this.district.setLevel('city') // 行政区级别
-      this.district.setExtensions('all')
-      // 行政区查询
-      // 按照adcode进行查询可以保证数据返回的唯一性
-      this.district.search(this.cityVal.cityCode, (status, result) => {
-        if (status === 'complete') {
-          this.getData(result.districtList[0], 'city', this.cityVal.cityCode)
-        }
-      })
-    },
     // 渲染地图echarts
     loadMapChart(mapName, data) {
       let data1 = []
       let whichApi = null
       let apiParams = {}
-      console.log(this.$route.matched[0].meta.whichApi)
       switch (this.$route.matched[0].meta.whichApi){
         case 'features':
           whichApi = doctorNurseBedMapApi

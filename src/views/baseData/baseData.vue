@@ -13,16 +13,15 @@
           </el-input>
         </h3>
         <div class="tableWrap">
-          <el-table :data="projectData" border fit>
+          <el-table :data="tableData" border fit>
             <el-table-column type="index" width="65" label="序号" align="center" />
-            <el-table-column prop="parkName" label="园区名称" align="center" sortable />
-            <el-table-column prop="parkTotalMoney" label="年度总产值/万元" width="220" align="center" sortable />
+            <el-table-column prop="name" label="园区名称" :show-overflow-tooltip="true" align="center" sortable />
+            <el-table-column prop="annualValue" label="年度总产值/万元" width="150" align="center" sortable />
           </el-table>
           <!--分页-->
           <div class="paginationWrap">
             <el-pagination :current-page.sync="currentPage" :page-sizes="[10]" :page-size="10"
-              layout="total, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
-              @current-change="handleCurrentChange" />
+              layout="total, prev, pager, next, jumper" :total="total" @current-change="handleCurrentChange" />
           </div>
         </div>
       </div>
@@ -30,11 +29,16 @@
     <div class="mainRight">
       <div class="centerTop">
         <span class="title">园区平台分布</span>
-        <el-select class="selectWidth" v-model="projectVal" size="mini" placeholder="请选择区域">
+        <el-select class="selectWidth" size="small" v-model="cityVal" value-key="cityName" @change="search('city')"
+          placeholder="请选择城市">
+          <el-option v-for="item in cityOpts" :key="item.value.cityName" :label="item.cityName" :value="item.value">
+          </el-option>
+        </el-select>
+        <el-select class="selectWidth" v-model="projectVal" size="mini" @change="projectType">
           <el-option v-for="item in projectOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select class="selectWidth" v-model="yearVal" size="mini" placeholder="请选择年份">
+        <el-select class="selectWidth" v-model="yearVal" size="mini" placeholder="请选择年份" @change="otherSearch">
           <el-option v-for="item in yearOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -44,48 +48,53 @@
   </div>
 </template>
 <script>
-import geoJson from '../../../static/js/zheJiang.json'
+import { parkAreaOutputApi, parkTableApi } from '@/api/api'
+import {mapMixin} from '@/config/mixin.js'
 import echarts from 'echarts'
 import 'echarts-gl'
 export default {
+  mixins: [mapMixin],
   data() {
     return {
-      projectVal: '0',
-      yearVal: '0',
+      total: null,
+      currentPage: 0,
+      locatiionParams: {
+        year: '',
+        year:''
+      },
+      params: {
+        name: '',
+        year:'',
+        type:'',
+        pageNo: 1
+      },
+      tableVal: '',
+
+      projectVal: 'YQPT',
       projectOpts: [
         {
-          value: '0',
+          value: 'YQPT',
           label: '园区平台'
         },
         {
-          value: '1',
+          value: 'TSXZ',
           label: '特色小镇'
         },
         {
-          value: '2',
+          value: 'ZDQY',
           label: '重点企业'
         },
         {
-          value: '3',
+          value: 'ZDXM',
           label: '重点项目'
         },
         {
-          value: '4',
+          value: 'QYSMJKGC',
           label: '千亿生命健康工程'
         },
         {
-          value: '5',
+          value: 'SZDCYXM',
           label: '省重点产业项目'
-        }
-      ],
-      yearOpts: [
-        {
-          value: '0',
-          label: '2019'
-        },
-        {
-          value: '1',
-          label: '2020'
         }
       ],
       investDetailData: {
@@ -104,9 +113,6 @@ export default {
           { value: 40, name: '舟山' }
         ]
       },
-      total: 8,
-      currentPage: 0,
-      tableVal: '',
       chartData: {
         xAxis: ['2014', '2015', '2016', '2017', '2018'],
         yAxis: [
@@ -120,208 +126,58 @@ export default {
           }
         ]
       },
-      projectData: [
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        },
-        {
-          parkName: '新昌高新技术产业园区 ',
-          parkTotalMoney: '130'
-        }
-      ]
+      tableData: []
     }
   },
   mounted() {
-    this.leftChart(this.chartData)
-    this.zheJiangMap(geoJson, this.investDetailData.chartData)
+    this.parkAreaOutputApiFn()
+    this.getParkTableFn()
+  },
+  watch: {
+    tableVal(val) {
+      this.getParkTableFn(this.tableVal)
+    }
   },
   methods: {
-    // 浙江省份地图
-    zheJiangMap(dataJson, data) {
-      let myChart = this.$echarts.init(document.getElementById('mapWrap'))
-      myChart.showLoading()
-      echarts.registerMap('zhejiang', dataJson)
-      myChart.hideLoading()
-      let geoCoordMap = {
-        杭州: [120.209947, 30.245853],
-        宁波: [121.6216, 29.859515],
-        嘉兴: [120.750865, 30.762653],
-        绍兴: [120.582112, 29.997117],
-        金华: [119.649506, 29.089524],
-        丽水: [119.921786, 28.451993],
-        温州: [120.672111, 28.000575],
-        台州: [121.428599, 28.661378],
-        衢州: [118.87263, 28.941708],
-        湖州: [120.102398, 30.867198],
-        舟山: [122.106863, 30.016028]
-      }
-
-      let convertData = function(sourse) {
-        let res = []
-        for (let i = 0; i < sourse.length; i++) {
-          let geoCoord = geoCoordMap[sourse[i].name]
-          if (geoCoord) {
-            res.push({
-              name: sourse[i].name,
-              value: geoCoord.concat(sourse[i].value)
-            })
-          }
+    projectType(){
+      this.getParkTableFn()
+    this.parkAreaOutputApiFn()
+    },
+    otherSearch() {
+      this.getParkTableFn()
+      this.parkAreaOutputApiFn()
+      this.district.setLevel('city') // 行政区级别
+      this.district.setExtensions('all')
+      // 行政区查询
+      // 按照adcode进行查询可以保证数据返回的唯一性
+      this.district.search(this.cityVal.cityCode, (status, result) => {
+        if (status === 'complete') {
+          this.getData(result.districtList[0], 'city', this.cityVal.cityCode)
         }
-        return res
-      }
-
-      let option = {
-        tooltip: {
-          show: false
-        },
-        geo: {
-          show: true,
-          map: 'zhejiang',
-          zoom: 1.2,
-          roam: true,
-          label: {
-            normal: {
-              show: false
-            },
-            emphasis: {
-              show: false,
-              textStyle: {
-                color: '#fff'
-              }
-            }
-          },
-          itemStyle: {
-            normal: {
-              areaColor: '#0d3145', // 地图背景颜色
-              borderColor: '#0ff' // 地图边界颜色
-            },
-            emphasis: {
-              show: false,
-              areaColor: '#0d3145', // 鼠标经过地图背景颜色
-              color: '#ddd'
-            }
-          }
-        },
-        series: [
-          {
-            name: 'credit_pm2.5',
-            type: 'scatter',
-            coordinateSystem: 'geo',
-            data: convertData(data),
-            symbolSize: 5,
-            label: {
-              normal: {
-                formatter: '{b}',
-                position: 'right',
-                show: true
-              }
-            },
-            itemStyle: {
-              normal: {
-                color: '#fff'
-              }
-            }
-          },
-          {
-            type: 'map',
-            map: 'zhejiang',
-            geoIndex: 0,
-            aspectScale: 3, // 长宽比
-            showLegendSymbol: false, // 存在legend时显示
-            label: {
-              normal: {
-                show: false
-              },
-              emphasis: {
-                show: false,
-                textStyle: {
-                  color: '#fff'
-                }
-              }
-            },
-            roam: true,
-            itemStyle: {
-              normal: {
-                areaColor: '#031525',
-                borderColor: '#3B5077'
-              },
-              emphasis: {
-                areaColor: '#2B91B7'
-              }
-            },
-            animation: false,
-            data: data
-          },
-          {
-            // 水滴
-            name: '点',
-            type: 'scatter',
-            coordinateSystem: 'geo',
-            symbol: 'pin',
-            symbolSize: [50, 50],
-            label: {
-              normal: {
-                show: true,
-                textStyle: {
-                  color: '#fff',
-                  fontSize: 9
-                },
-                formatter(value) {
-                  return value.data.value[2]
-                }
-              }
-            },
-            itemStyle: {
-              normal: {
-                color: '#D8BC37' // 标志颜色
-              }
-            },
-            zlevel: 6,
-            data: convertData(data)
-          }
-        ]
-      }
-      myChart.setOption(option)
+      })
+    },
+    // 查询园区分布分布及年度产值数据
+    parkAreaOutputApiFn(){
+      this.locatiionParams.year = this.yearVal
+      this.locatiionParams.type = this.projectVal
+      parkAreaOutputApi(this.locatiionParams).then(res => {
+        this.leftChartFn(res.data.data)
+      })
+    },
+    // 查询园区列表数据
+    getParkTableFn() {
+      this.params.year = this.yearVal
+      this.params.type = this.projectVal
+      this.params.name = this.tableVal
+      parkTableApi(this.params).then(res => {
+        this.total = res.data.total
+        this.tableData = res.data.data
+        console.log(this.tableData)
+      })
     },
     // 园区分布及年度产值
-    leftChart(data) {
-      let legends = []
-      for (let item of data.yAxis.values()) {
-        legends.push(item.name)
-      }
+    leftChartFn(data) {
+      console.log(data)
       let charts = this.$echarts.init(document.getElementById('leftChart'))
       let option = {
         color: ['#3398DB'],
@@ -339,18 +195,22 @@ export default {
             fontSize: '16px',
             color: '#fff'
           },
-          data: legends
+          data: [data.numName, data.valueName]
         },
         grid: {
           left: '5%',
           right: '5%',
-          bottom: '3%',
+          bottom: '5%',
           containLabel: true
         },
         xAxis: [
           {
             type: 'category',
-            data: data.xAxis,
+            data: data.city,
+            axisLabel: {
+              interval: 0,
+              rotate: 0
+            },
             axisTick: {
               alignWithLabel: true
             },
@@ -367,8 +227,8 @@ export default {
             name: '园区数量',
             type: 'value',
             min: 0,
-            max: 25,
-            interval: 5,
+            max: 100,
+            interval: 20,
             axisLine: {
               lineStyle: {
                 type: 'solid',
@@ -380,8 +240,8 @@ export default {
             name: '园区总产值',
             type: 'value',
             min: 0,
-            max: 250,
-            interval: 50,
+            max: 2000000,
+            interval: 400000,
             axisLine: {
               lineStyle: {
                 type: 'solid',
@@ -392,13 +252,13 @@ export default {
         ],
         series: [
           {
-            name: '园区数量',
+            name: data.numName,
             type: 'bar',
             barWidth: '10px',
             barGap: '50%',
             itemStyle: {
               normal: {
-                barBorderRadius: [5,5,0,0],
+                barBorderRadius: [5, 5, 0, 0],
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                   {
                     offset: 0,
@@ -411,17 +271,17 @@ export default {
                 ])
               }
             },
-            data: data.yAxis[0].value
+            data: data.num
           },
           {
-            name: '园区总产值',
+            name: data.valueName,
             type: 'bar',
             yAxisIndex: 1,
             barWidth: '10px',
             barGap: '50%',
             itemStyle: {
               normal: {
-                barBorderRadius: [5,5,0,0],
+                barBorderRadius: [5, 5, 0, 0],
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                   {
                     offset: 0,
@@ -434,19 +294,15 @@ export default {
                 ])
               }
             },
-            data: data.yAxis[1].value
+            data: data.outputValue
           }
         ]
       }
       charts.setOption(option)
     },
-    handleSizeChange(val) {
-      // this.params.pageSize = val
-      // this.getAreaList(this.params)
-    },
     handleCurrentChange(val) {
-      // this.params.page = val
-      // this.getAreaList(this.params)
+      this.params.pageNo = val
+      this.getParkTableFn(this.params)
     }
   }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios'
-
+axios.defaults.baseURL = 'http://47.103.102.173:8881/MassiveHealthS/'
+// axios.defaults.baseURL = 'http://t294k52841.wicp.vip'
 // 请求拦截器
 axios.interceptors.request.use(config => {
   return config

@@ -63,16 +63,84 @@
       @include wh(100%, 301px);
       @include bis('../../assets/images/common/border301.png');
 
-      #healthOutputChart {
-        height: 230px;
-      }
-    }
-
-    .secondDiv {
-      @include wh(100%, 301px);
-      @include bis('../../assets/images/common/border301.png');
+      #healthOutputChart,
       #healthIncrementChart {
+        position: relative;
         height: 230px;
+        background: url('../../assets/images/features/treeChartImg.png') no-repeat center;
+
+        .span10 {
+          position: absolute;
+          top: 147px;
+          right: 290px;
+        }
+
+        .span9 {
+          position: absolute;
+          top: 135px;
+          left: 290px;
+        }
+
+        .span8 {
+          position: absolute;
+          top: 120px;
+          right: 290px;
+        }
+
+        .span7 {
+          position: absolute;
+          top: 103px;
+          left: 290px;
+        }
+
+        .span6 {
+          position: absolute;
+          top: 90px;
+          right: 290px;
+        }
+
+        .span5 {
+          position: absolute;
+          top: 73px;
+          left: 290px;
+        }
+
+        .span4 {
+          position: absolute;
+          top: 60px;
+          right: 290px;
+        }
+
+        .span3 {
+          position: absolute;
+          top: 44px;
+          left: 290px;
+        }
+
+        .span2 {
+          position: absolute;
+          top: 30px;
+          right: 290px;
+        }
+
+        .span1 {
+          position: absolute;
+          top: 17px;
+          left: 290px;
+        }
+
+        .span0 {
+          position: absolute;
+          top: 3px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .span11 {
+          position: absolute;
+          bottom: 21px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
       }
     }
 

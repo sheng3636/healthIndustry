@@ -47,6 +47,7 @@ exports.cssLoaders = function (options) {
     if (options.extract) {
       return ExtractTextPlugin.extract({
         use: loaders,
+        publicPath: '../../', //这里加上这个防止打包dist后，放后端不显示
         fallback: 'vue-style-loader'
       })
     } else {

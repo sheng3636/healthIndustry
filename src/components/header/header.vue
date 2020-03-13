@@ -7,7 +7,7 @@
     </nav>
     <span class="navCenter">浙江省发展规划研究院</span>
     <nav class="navRight">
-      <router-link to="/technology">解决方案</router-link>
+      <router-link to="/solution">解决方案</router-link>
       <router-link to="/EHS">数据制图</router-link>
       <div class="dateTime">{{CurrentDateTime}}</div>
     </nav>
