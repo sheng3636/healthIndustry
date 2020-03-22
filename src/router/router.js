@@ -4,7 +4,10 @@ import Router from 'vue-router'
 Vue.use(Router)
 const DataOverview = r => require.ensure([], () => r(require('@/views/dataOverview/dataOverview')))
 const BaseData = r => require.ensure([], () => r(require('@/views/baseData/baseData')))
-const Features = r => require.ensure([], () => r(require('@/views/features/features')))
+const Characteristic = r => require.ensure([], () => r(require('@/views/characteristic/characteristic')))
+const Hospital = r => require.ensure([], () => r(require('@/views/characteristic/components/hospital/hospital')))
+const NursingInstitution = r => require.ensure([], () => r(require('@/views/characteristic/components/nursingInstitution/nursingInstitution')))
+const MedicalInstitution = r => require.ensure([], () => r(require('@/views/characteristic/components/medicalInstitution/medicalInstitution')))
 const Solution = r => require.ensure([], () => r(require('@/views/solution/solution')))
 
 export default new Router({
@@ -29,13 +32,29 @@ export default new Router({
       }
     },
     {
-      path: '/features',
-      name: 'Features',
-      component: Features,
-      meta: {
-        whichApi: 'features'
-      }
-    }, {
+      path: '/characteristic',
+      name: 'Characteristic',
+      redirect: '/characteristic/hospital',
+      component: Characteristic,
+      children: [
+        {
+          path: 'hospital',
+          name: 'Hospital',
+          component: Hospital
+        },
+        {
+          path: 'nursingInstitution',
+          name: 'NursingInstitution',
+          component: NursingInstitution
+        },
+        {
+          path: 'medicalInstitution',
+          name: 'MedicalInstitution',
+          component: MedicalInstitution
+        }
+      ]
+    },
+    {
       path: '/solution',
       name: 'Solution',
       component: Solution,

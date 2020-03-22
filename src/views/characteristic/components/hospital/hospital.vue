@@ -20,20 +20,15 @@
     <div class="mainCenter">
       <div class="centerTop">
         <span class="title">医疗人员、床位</span>
-        <el-select class="selectWidth" size="small" v-model="typeVal" value-key="cityName"
-          placeholder="请选择类型">
-          <el-option v-for="item in typeOpts" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
-        <el-select class="selectWidth" size="small" v-model="cityVal" value-key="cityName" @change="search('city')"
-          placeholder="请选择城市">
-          <el-option v-for="item in cityOpts" :key="item.value.cityName" :label="item.cityName" :value="item.value">
-          </el-option>
-        </el-select>
-        <el-select class="selectWidth" v-model="yearVal" size="mini" placeholder="请选择年份" @change="otherSearch">
+        <el-select class="selectWidth" v-model="queryParams.year" size="mini" @change="otherSearch">
           <el-option v-for="item in yearOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
+      </div>
+      <div class="typeWrap">
+        <el-button @click="typeClick(1)" type="success">医生</el-button>
+        <el-button @click="typeClick(2)" type="info">护士</el-button>
+        <el-button @click="typeClick(3)" type="warning">床位</el-button>
       </div>
       <div id="mapWrap"></div>
     </div>
@@ -41,19 +36,21 @@
       <div class="firstDiv">
         <h3 class="divTitle"><i>省各地市医生人数占比</i></h3>
         <div id="healthOutputChart">
-          <span :class="'span' + index" v-for="(item,index) in doctorData.listData" :key="index">{{item.name}}{{(item.value / doctorData.amount).toFixed(1)}}%</span>
+          <span :class="'span' + index" v-for="(item,index) in doctorData.listData"
+            :key="index">{{item.name}}{{toFixedTwo(item.value,doctorData.amount)}}</span>
           <span class="span11">全省医生{{doctorData.amount}}人</span>
         </div>
       </div>
       <div class="firstDiv">
         <h3 class="divTitle"><i>省各地市护士人数占比</i></h3>
         <div id="healthIncrementChart">
-          <span :class="'span' + index" v-for="(item,index) in nurseData.listData" :key="index">{{item.name}}{{(item.value / nurseData.amount).toFixed(1)}}%</span>
+          <span :class="'span' + index" v-for="(item,index) in nurseData.listData"
+            :key="index">{{item.name}}{{toFixedTwo(item.value,nurseData.amount)}}</span>
           <span class="span11">全省护士{{nurseData.amount}}人</span>
         </div>
       </div>
       <div class="thirdDiv">
-        <h3 class="divTitle"><i>省各地市床位占比-</i><span>{{bedTotal}}床</span></h3>
+        <h3 class="divTitle"><i>省各地市床位占比-</i></h3>
         <div id="locationBedChart"></div>
       </div>
     </div>
@@ -63,8 +60,10 @@
 import {
   personBedApi,
   personBedThousandApi,
-  doctorNurseBedApi
+  doctorNurseBedApi,
+  doctorNurseBedMapApi
 } from '@/api/api'
+import geoJson from '../../../../../static/js/zheJiang.json'
 import { mapMixin } from '@/config/mixin.js'
 import echarts from 'echarts'
 import 'echarts-gl'
@@ -72,56 +71,85 @@ export default {
   mixins: [mapMixin],
   data() {
     return {
-      bedTotal:null,
-      doctorData:{},
-      nurseData:{},
-      typeVal: '1',
-      typeOpts: [
+      geoJson: geoJson,   
+      yearOpts: [
         {
-          value: '1',
-          label: '医生'
+          value: '2017',
+          label: '2017'
         },
         {
-          value: '2',
-          label: '护士'
+          value: '2018',
+          label: '2018'
         },
         {
-          value: '3',
-          label: '床位'
+          value: '2019',
+          label: '2019'
+        },
+        {
+          value: '2020',
+          label: '2020'
         }
-      ]
+      ],
+      queryParams:{
+        year:'2019',
+        type:1
+      },
+      doctorData: {},
+      nurseData: {}
     }
   },
   mounted() {
-    personBedApi().then(res => {
-      this.personBedChartFn(res.data)
-    })
-    personBedThousandApi().then(res => {
-      this.personBedThousandChartFn(res.data)
-      this.bedAllotChartFn(res.data.numAnalysis)
-      this.personPercentChartFn(res.data.numAnalysis.personnelData)
-    })
-    doctorNurseBedApi().then(res => {
-      this.bedTotal = res.data.bed.amount
-      this.doctorData = res.data.doctor
-      this.nurseData = res.data.doctor
-      this.locationBedChartFn(res.data.bed.listData)
-    })
+    this.doctorNurseBedMapApiFn()
+    this.personBedApiFn()
+    this.personBedThousandApiFn()
+    this.doctorNurseBedApiFn()
   },
   methods: {
+    typeClick(data){
+      this.queryParams.type = data
+      this.doctorNurseBedMapApiFn()
+    },
     otherSearch() {
-      this.district.setLevel('city') // 行政区级别
-      this.district.setExtensions('all')
-      // 行政区查询
-      // 按照adcode进行查询可以保证数据返回的唯一性
-      this.district.search(this.cityVal.cityCode, (status, result) => {
-        if (status === 'complete') {
-          this.getData(result.districtList[0], 'city', this.cityVal.cityCode)
-        }
+      this.personBedApiFn()
+      this.personBedThousandApiFn()
+      this.doctorNurseBedApiFn()
+    },
+    toFixedTwo(num,total) {
+      let precent = 0
+      if(total === 0){
+        precent = 0
+      } else {
+        precent = (num / total) * 100
+      }
+      return precent.toFixed(1) + '%'
+    },
+    // 查询浙江省地市医生、护士、床位 地图分布数据
+    doctorNurseBedMapApiFn(){
+      doctorNurseBedMapApi(this.queryParams).then(res => {
+        this.zheJiangMap(geoJson, res.data.data)
       })
     },
-    toFixedTwo(data){
-      return data.toFixed(1)
+    // 获取省历年医疗人员、床位数量数据
+    personBedApiFn(){
+      personBedApi(this.queryParams).then(res => {
+        this.personBedChartFn(res.data)
+      })
+    },
+    // 获取省历年医疗人员,床位每千人数、年医疗人员占比、床位分配数量分析
+    personBedThousandApiFn(){
+      personBedThousandApi(this.queryParams).then(res => {
+        this.personBedThousandChartFn(res.data)
+        this.bedAllotChartFn(res.data.numAnalysis)
+        this.personPercentChartFn(res.data.numAnalysis.personnelData)
+      })
+    },
+    // 省各地市医生人数占比、省各地市护士人数占比、省各地市床位占比
+    doctorNurseBedApiFn(){
+      doctorNurseBedApi(this.queryParams).then(res => {
+        this.doctorData = res.data.doctor
+        this.nurseData = res.data.nurse
+        this.locationBedChartFn(res.data.bed.listData)
+      })
     },
     // 省历年医疗人员、床位数量chart
     personBedChartFn(data) {
@@ -251,7 +279,7 @@ export default {
       }
       charts.setOption(option)
     },
-    // 省历年医疗人员chart
+    // 省历年医疗人员,床位每千人数chart
     personBedThousandChartFn(data) {
       let charts = this.$echarts.init(
         document.getElementById('personBedThousandChart')
@@ -430,7 +458,11 @@ export default {
                 percent = data[i].value
               }
             }
-            target = (percent / total) * 100
+            if (percent === 0) {
+              target = 0
+            } else {
+              target = (percent / total) * 100
+            }
             return name + ' ' + target.toFixed(1) + '%'
           },
           data: legends
@@ -567,7 +599,11 @@ export default {
                 percent = data[i].value
               }
             }
-            target = (percent / total) * 100
+            if (percent === 0) {
+              target = 0
+            } else {
+              target = (percent / total) * 100
+            }
             return name + ' ' + target.toFixed(2) + '%'
           },
           data: legends
@@ -607,5 +643,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import './features.scss';
+@import 'hospital.scss';
+.selectWidth{
+  margin-left: 80px!important;
+}
 </style>

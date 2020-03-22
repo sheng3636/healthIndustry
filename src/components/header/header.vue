@@ -3,9 +3,8 @@
     <nav class="navLeft">
       <router-link to="/dataOverview">数据导览</router-link>
       <router-link to="/baseData">基础数据展示</router-link>
-      <router-link to="/features">专题展示</router-link>
+      <router-link to="/characteristic">专题展示</router-link>
     </nav>
-    <span class="navCenter">浙江省发展规划研究院</span>
     <nav class="navRight">
       <router-link to="/solution">解决方案</router-link>
       <router-link to="/EHS">数据制图</router-link>

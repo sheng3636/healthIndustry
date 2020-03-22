@@ -13,8 +13,8 @@ module.exports = {
     proxyTable: {
       '/api': {
         // target: 'https://www.fastmock.site/mock/20c29f4ede624f70f141bb200397aa12/bigHealth/AuxiliaryPlanning', //前端数据Mock接口
-        target: 'http://47.103.102.173:8881/MassiveHealthS', //后台接口
-          // target: 'http://t294k52841.wicp.vip', //后台接口
+        // target: 'http://47.103.102.173:8881/MassiveHealthS', //后台接口
+          target: 'http://t294k52841.wicp.vip', //后台接口
         changeOrigin: true, //允许跨域
         pathRewrite: {
           '^/api': '' //重写接口

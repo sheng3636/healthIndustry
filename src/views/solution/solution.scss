@@ -7,13 +7,16 @@
 
   .mainLeft {
     @include wh(1435px, 100%);
+    border: 1px solid rgba(55,85,218,0.3);
+    box-shadow: 0 0 15px 5px rgba(94, 95, 133, 0.2) inset;
 
     .leftTitle {
-      @include sc(35px, #fff);
+      @include sc(24px, #fff);
       text-align: center;
       font-weight: bold;
+      background: url(../../assets/images/common/mapTitleTop.png) center no-repeat;
     }
-
+    
     .overviewArea,
     .netArea {
       position: relative;
@@ -21,7 +24,6 @@
       margin-top: 10px;
       line-height: 20px;
       height: 914px;
-      background: #fff;
       @include sc(14px,#333);
 
       .backgroundTxt {
@@ -42,39 +44,36 @@
       }
       .overViewArea{
         @include wh(100%,100%);
+        overflow-y: auto;
       }
+    }
+    .backgroundWhite{
+      background-color: #fff;
     }
   }
 
   .mainRight {
+    background: url(../../assets//images/common/borderAllHeight.png) center no-repeat;
+    background-size: 100% 100%;
     @include wh(430px, 100%);
 
     .searchTypeTab {
-      margin: 0 auto;
+      margin: 25px auto 0 auto;
       width: 80%;
-      line-height: 45px;
+      line-height: 35px;
       @include fj(space-between);
 
       li {
         width: 50%;
         text-align: center;
-        background: #fff;
         cursor: pointer;
-        @include sc(20px, #000);
-
-        &:first-child {
-          border-top-left-radius: 5px;
-          border-bottom-left-radius: 5px;
-        }
-
-        &:last-child {
-          border-top-right-radius: 5px;
-          border-bottom-right-radius: 5px;
-        }
+        @include sc(20px, #0096ff);
 
         &.active {
           color: #fff;
-          background: #999;
+          background: rgba(0,234,255,0.15);
+          border: 1px solid rgba(90,234,255,1);
+          border-radius: 3px;
         }
       }
     }
@@ -83,29 +82,21 @@
     .netFileWrap {
       margin-top: 10px;
       height: 914px;
-      background: #fff;
-
-      .searchTitle {
-        padding-bottom: 5px;
-        text-align: center;
-        border-bottom: 2px solid #333;
-        @include sc(18px, #333);
-      }
 
       .searchCount {
-        padding: 5px 0;
+        margin: 5px 0 10px 0;
         text-align: center;
-        @include sc(15px, #333);
+        @include sc(16px, #00e8ff);
 
         span {
           margin: 0 5px;
-          @include sc(16px, #000);
           font-weight: bold;
         }
 
         i {
           font-size: 18px;
           font-weight: bold;
+          cursor: pointer;
         }
       }
 
@@ -114,43 +105,13 @@
       }
 
       .localFileWrap {
-        margin-top: -30px;
-
-        .lineGrap {
-          position: relative;
-          height: 50px;
-
-          &::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, 50%);
-            width: 245px;
-            border: 2px solid #333;
-          }
-
-          span {
-            float: right;
-            display: block;
-            margin-right: 14px;
-            margin-top: 14px;
-            padding: 5px 10px;
-            border-radius: 3px;
-            background: #169bd5;
-            font-size: 14px;
-            color: #fff;
-            cursor: pointer;
-          }
-        }
-
         .fileItem {
           margin: 0 auto 15px auto;
           width: 90%;
           height: 160px;
-          border: 1px solid #333;
           border-radius: 5px;
-          color: #333;
+          color: #bbbbbb;
+          background: rgba(23,129,255,0.15);
 
           .fileTitle {
             padding: 0 5px;
@@ -159,7 +120,7 @@
             text-overflow: ellipsis;
             overflow: hidden;
             word-break: break-all;
-            font-size: 18px;
+            @include sc(18px,#fff);
             font-weight: bold;
           }
 
@@ -220,6 +181,7 @@
             word-break: break-all;
             font-size: 18px;
             font-weight: bold;
+            color: #fff;
             box-sizing: border-box;
           }
 

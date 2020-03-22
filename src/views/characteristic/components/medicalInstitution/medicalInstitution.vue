@@ -2,12 +2,12 @@
   <div class="bottomMain">
     <div class="mainLeft">
       <div class="firstDiv">
-        <h3 class="divTitle">{{switchTitle(params.type)}}分布及年度产值</h3>
+        <h3 class="divTitle">医疗机构分布</h3>
         <div id="leftChart"></div>
       </div>
       <div class="secondDiv">
         <h3 class="divTitle">
-          <i>{{switchTitle(params.type)}}列表</i>
+          <i>医疗机构列表</i>
           <el-input placeholder="请输入内容" size="mini" v-model="tableVal" style="width:200px">
             <i slot="suffix" class="el-input__icon el-icon-search"></i>
           </el-input>
@@ -26,13 +26,9 @@
         </div>
       </div>
     </div>
-    <div class="mainRight">
+    <div class="mainCenter">
       <div class="centerTop">
-        <span class="title">{{switchTitle(params.type)}}分布</span>
-        <el-select class="selectWidth" v-model="params.type" size="mini" @change="projectType">
-          <el-option v-for="item in projectOpts" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
+        <span class="title">医疗机构分布</span>
         <el-select class="selectWidth" v-model="params.year" size="mini" @change="otherSearch">
           <el-option v-for="item in yearOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
@@ -40,11 +36,21 @@
       </div>
       <div id="mapWrap"></div>
     </div>
+    <div class="mainRight">
+      <div class="firstDiv">
+        <h3 class="divTitle"><i>各地市医院占比</i></h3>
+        <div id="healthOutputChart"></div>
+      </div>
+      <div class="secondDiv">
+        <h3 class="divTitle"><i>各地市诊所占比</i></h3>
+        <div id="healthIncrementChart"></div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
-import geoJson from '../../../static/js/zheJiang.json'
-import { mapDataApi, parkAreaOutputApi, parkTableApi } from '@/api/api'
+import geoJson from '../../../../../static/js/zheJiang.json'
+import { medicalInstitutionMapApi, medicalInstitutionLocationApi, medicalInstitutionListApi,hospitalClinicApi } from '@/api/api'
 import { mapMixin } from '@/config/mixin.js'
 import echarts from 'echarts'
 import 'echarts-gl'
@@ -53,7 +59,6 @@ export default {
   data() {
     return {
       geoJson: geoJson,
-      typeTitle: '园区平台',
       total: null,
       currentPage: 0,
       yearOpts: [
@@ -76,38 +81,11 @@ export default {
       ],
       params: {
         name: '',
-        year: '2019',
-        type: '0',
-        pageNo: 1
+        year: '2017',
+        pageNo: 1,
+        type:41
       },
       tableVal: '',
-
-      projectOpts: [
-        {
-          value: '0',
-          label: '园区平台'
-        },
-        {
-          value: '1',
-          label: '特色小镇'
-        },
-        {
-          value: '2',
-          label: '重点企业'
-        },
-        {
-          value: '3',
-          label: '重点项目'
-        },
-        {
-          value: '4',
-          label: '千亿生命健康工程'
-        },
-        {
-          value: '5',
-          label: '重大项目'
-        }
-      ],
       chartData: {
         xAxis: ['2014', '2015', '2016', '2017', '2018'],
         yAxis: [
@@ -125,71 +103,52 @@ export default {
     }
   },
   mounted() {
-    this.mapDataApiFn()
-    this.parkAreaOutputApiFn()
-    this.getParkTableFn()
-    this.zheJiangMap(geoJson)
+    this.medicalInstitutionMapApiFn()
+    this.medicalInstitutionLocationApiFn()
+    this.medicalInstitutionListApi()
+    this.hospitalClinicApiFn()
   },
   watch: {
     tableVal(val) {
-      this.getParkTableFn(this.tableVal)
+      this.medicalInstitutionListApi(this.tableVal)
     }
   },
   methods: {
-    projectType() {
-      this.getParkTableFn()
-      this.parkAreaOutputApiFn()
-    },
-    switchTitle(type) {
-      switch (type) {
-        case '0':
-          return '园区平台'
-          break
-        case '1':
-          return '特色小镇'
-          break
-        case '2':
-          return '重点企业'
-          break
-        case '3':
-          return '重点项目'
-          break
-        case '4':
-          return '千亿生命健康工程'
-          break
-        default:
-          return '千亿生命健康工程'
-          break
-      }
-    },
     otherSearch() {
-      this.mapDataApiFn()
-      this.getParkTableFn()
-      this.parkAreaOutputApiFn()
+      this.medicalInstitutionMapApiFn()
+      this.medicalInstitutionLocationApiFn()
+      this.medicalInstitutionListApi()
+      this.hospitalClinicApiFn()
     },
-    // 查询省健康产业分布
-    mapDataApiFn() {
-      mapDataApi(this.params).then(res => {
+    // 查询医疗机构地图数据
+    medicalInstitutionMapApiFn() {
+      medicalInstitutionMapApi(this.params).then(res => {
         this.zheJiangMap(geoJson, res.data)
       })
     },
-    // 查询园区分布分布及年度产值数据
-    parkAreaOutputApiFn() {
-      parkAreaOutputApi(this.params).then(res => {
+    // 查询医疗机构分布及年度产值
+    medicalInstitutionLocationApiFn() {
+      medicalInstitutionLocationApi(this.params).then(res => {
         this.leftChartFn(res.data)
       })
     },
-    // 查询园区列表数据
-    getParkTableFn() {
+    // 查询医疗机构列表
+    medicalInstitutionListApi() {
       this.params.name = this.tableVal
-      parkTableApi(this.params).then(res => {
+      medicalInstitutionListApi(this.params).then(res => {
         this.total = res.data.total
         this.tableData = res.data.data
       })
     },
+    // 获取各地市医院、诊所占比数据
+    hospitalClinicApiFn() {
+      hospitalClinicApi(this.params).then(res => {
+        this.hospitalCliniChartFn('healthOutputChart',res.data.clinicData)
+        this.hospitalCliniChartFn('healthIncrementChart',res.data.hospitalData)
+      })
+    },
     // 园区分布及年度产值
     leftChartFn(data) {
-      console.log(data)
       let charts = this.$echarts.init(document.getElementById('leftChart'))
       let option = {
         color: ['#3398DB'],
@@ -318,13 +277,85 @@ export default {
     },
     handleCurrentChange(val) {
       this.params.pageNo = val
-      this.getParkTableFn(this.params)
-    }
+      this.medicalInstitutionListApi(this.params)
+    },
+    // 各地市医院、诊所占比chart
+    hospitalCliniChartFn(id,data) {
+      let legends = []
+      let total = 0
+      for (let item of data.values()) {
+        legends.push(item.name)
+        total += item.value
+      }
+      
+      console.log(legends)
+      let charts = this.$echarts.init(
+        document.getElementById(id)
+      )
+      let option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          type: 'scroll',
+          orient: 'vertical',
+          right: '5%',
+          top: '2%',
+          bottom: '2%',
+          textStyle: {
+            fontSize: '16',
+            color: '#fff'
+          },
+          pageIconColor: '#fff',
+          pageIconInactiveColor: '#333',
+          pageIconSize: '10',
+          pageTextStyle: {
+            color: '#fff'
+          },
+          formatter: function(name) {
+            let percent = ''
+            let target = null
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].name === name) {
+                percent = data[i].value
+              }
+            }
+            if (total === 0) {
+              target = 0
+            } else {
+              target = (percent / total) * 100
+            }
+            return name + ' ' + target.toFixed(1) + '%'
+          },
+          data: legends
+        },
+        series: [
+          {
+            name: '省各地市投资占比',
+            type: 'pie',
+            radius: [125, 20],
+            center: ['45%', '50%'],
+            roseType: 'radius',
+            label: {
+              show: false
+            },
+            emphasis: {
+              label: {
+                show: false
+              }
+            },
+            data: data
+          }
+        ]
+      }
+      charts.setOption(option)
+    }    
   }
 }
 </script>
 <style lang="scss" scoped>
-@import './baseData.scss';
+@import './medicalInstitution.scss';
 </style>
 <style lang="scss">
 .tableWrap {

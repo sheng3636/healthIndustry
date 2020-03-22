@@ -27,7 +27,8 @@
   .mainLeft {
     .firstDiv {
       @include wh(100%, 346px);
-      @include bis('../../assets/images/common/border346.png');
+      @include bis('../../../../assets/images/common/border346.png');
+      @include bis('../../../../assets/images/common/border346.png');
       #PersonBedChart {
         height: 265px;
       }
@@ -35,7 +36,7 @@
 
     .secondDiv {
       @include wh(100%, 346px);
-      @include bis('../../assets/images/common/border346.png');
+      @include bis('../../../../assets/images/common/border346.png');
       #personBedThousandChart {
         height: 265px;
       }
@@ -44,7 +45,7 @@
     .thirdDiv {
       position: relative;
       @include wh(100%, 234px);
-      @include bis('../../assets/images/common/border234.png');
+      @include bis('../../../../assets/images/common/border234.png');
       .chartWrap{
         display: flex;
         justify-content: space-between;
@@ -61,13 +62,13 @@
   .mainRight {
     .firstDiv {
       @include wh(100%, 301px);
-      @include bis('../../assets/images/common/border301.png');
+      @include bis('../../../../assets/images/common/border301.png');
 
       #healthOutputChart,
       #healthIncrementChart {
         position: relative;
         height: 230px;
-        background: url('../../assets/images/features/treeChartImg.png') no-repeat center;
+        background: url('../../../../assets/images/features/treeChartImg.png') no-repeat center;
 
         .span10 {
           position: absolute;
@@ -146,7 +147,7 @@
 
     .thirdDiv {
       @include wh(100%, 346px);
-      @include bis('../../assets/images/common/border346.png');
+      @include bis('../../../../assets/images/common/border346.png');
 
       #locationBedChart {
         height: 270px;
@@ -162,7 +163,7 @@
       justify-content: flex-end;
       align-items: center;
       height: 40px;
-      @include bis('../../assets/images/common/mapTitleTop.png');
+      @include bis('../../../../assets/images/common/mapTitleTop.png');
       .selectWidth{
         width: 150px;
         margin-left: 10px;
@@ -175,9 +176,13 @@
         font-size: 24px;
       }
     }
+    .typeWrap{
+      margin: 5px;
+      @include fj(center);
+    }
 
     #mapWrap {
-      height: calc(100% - 40px);
+      height: calc(100% - 100px);
     }
   }
 }

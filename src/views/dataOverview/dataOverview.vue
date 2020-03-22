@@ -17,12 +17,7 @@
     <div class="mainCenter">
       <div class="centerTop">
         <span class="title">省健康产业分布</span>
-        <el-select class="selectWidth" size="small" v-model="cityVal" value-key="cityName" @change="search('city')"
-          placeholder="请选择城市">
-          <el-option v-for="item in cityOpts" :key="item.value.cityName" :label="item.cityName" :value="item.value">
-          </el-option>
-        </el-select>
-        <el-select class="selectWidth" v-model="yearVal" size="mini" placeholder="请选择年份" @change="otherSearch">
+        <el-select class="selectWidth" v-model="params.year" size="mini" @change="otherSearch">
           <el-option v-for="item in yearOpts" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -47,6 +42,7 @@
 </template>
 <script>
 import {
+  industryDistributionApi,
   healthDetailApi,
   investApi,
   investDetailApi,
@@ -54,21 +50,43 @@ import {
   healthIncrementApi,
   healthLocationOutputApi
 } from '@/api/api'
-import { mapMixin } from '@/config/mixin.js'
 import echarts from 'echarts'
 import 'echarts-gl'
+import geoJson from '../../../static/js/zheJiang.json'
+import { mapMixin } from '@/config/mixin.js'
 export default {
   mixins: [mapMixin],
   data() {
     return {
+      geoJson: geoJson,
+      yearOpts: [
+        {
+          value: '2017',
+          label: '2017'
+        },
+        {
+          value: '2018',
+          label: '2018'
+        },
+        {
+          value: '2019',
+          label: '2019'
+        },
+        {
+          value: '2020',
+          label: '2020'
+        }
+      ],
       params: {
-        year: ''
+        year: '2019',
+        adcode: 330000
       },
       investTotal: null,
       outputTotal: null
     }
   },
   mounted() {
+    this.industryDistributionApiFn()
     this.healthDetailApiFn()
     this.investApiFn()
     this.investDetailApiFn()
@@ -78,39 +96,34 @@ export default {
   },
   methods: {
     otherSearch() {
+      this.industryDistributionApiFn()
       this.healthDetailApiFn()
       this.investApiFn()
       this.investDetailApiFn()
       this.healthOutputApiFn()
       this.healthIncrementApiFn()
       this.healthLocationOutputApiFn()
-      this.district.setLevel('city') // 行政区级别
-      this.district.setExtensions('all')
-      // 行政区查询
-      // 按照adcode进行查询可以保证数据返回的唯一性
-      this.district.search(this.cityVal.cityCode, (status, result) => {
-        if (status === 'complete') {
-          this.getData(result.districtList[0], 'city', this.cityVal.cityCode)
-        }
+    },
+    // 查询省健康产业分布
+    industryDistributionApiFn() {
+      industryDistributionApi(this.params).then(res => {
+        this.zheJiangMap(geoJson, res.data.data)
       })
     },
     // 获取省健康产业情况数据
     healthDetailApiFn() {
-      this.params.year = this.yearVal
       healthDetailApi(this.params).then(res => {
         this.healthDetailChartFn(res.data)
       })
     },
     // 获取省内产业投融资数据
     investApiFn() {
-      this.params.year = this.yearVal
       investApi(this.params).then(res => {
         this.investChartFn(res.data)
       })
     },
     // 获取省内投资情况数据
     investDetailApiFn() {
-      this.params.year = this.yearVal
       investDetailApi(this.params).then(res => {
         this.investTotal = res.data.amount
         this.investDetailChartFn(res.data)
@@ -118,23 +131,18 @@ export default {
     },
     // 获取省健康产业总产出数据
     healthOutputApiFn() {
-      this.params.year = this.yearVal
-
       healthOutputApi(this.params).then(res => {
         this.healthOutputChartFn(res.data)
       })
     },
     // 获取省健康产业历年产值增量数据
     healthIncrementApiFn() {
-      this.params.year = this.yearVal
       healthIncrementApi(this.params).then(res => {
         this.healthIncrementChartFn(res.data)
       })
     },
     // 获取省各地市健康产业总产出数据
     healthLocationOutputApiFn() {
-      this.params.year = this.yearVal
-
       healthLocationOutputApi(this.params).then(res => {
         this.outputTotal = res.data.amount
         this.healthLocationOutputChartFn(res.data)
@@ -428,7 +436,11 @@ export default {
                 percent = data.data[i].value
               }
             }
-            target = (percent / total) * 100
+            if (total === 0) {
+              target = 0
+            } else {
+              target = (percent / total) * 100
+            }
             return name + ' ' + target.toFixed(1) + '%'
           },
           data: legends
@@ -708,7 +720,11 @@ export default {
                 percent = data.data[i].value
               }
             }
-            target = (percent / total) * 100
+            if (total === 0) {
+              target = 0
+            } else {
+              target = (percent / total) * 100
+            }
             return name + ' ' + target.toFixed(1) + '%'
           },
           data: legends

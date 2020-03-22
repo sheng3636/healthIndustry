@@ -3,7 +3,8 @@
   margin: 25px auto 0 auto;
   @include wh(1880px, 970px);
   @include fj(space-between);
-  .mainLeft {
+  .mainLeft,
+  .mainRight {
     flex-direction: column;
     align-items: flex-start;
     @include wh(526px, 100%);
@@ -13,8 +14,6 @@
       justify-content: space-between;
       margin: 25px 55px 0 55px;
       font-size: 21px;
-      // background: linear-gradient(to right, #0072ff, #01aaff);
-      // -webkit-background-clip: text;
       color: #0072ff;
 
       span {
@@ -24,7 +23,7 @@
 
     .firstDiv {
       @include wh(100%, 346px);
-      @include bis('../../assets/images/common/border346.png');
+      @include bis('../../../../assets/images/common/border346.png');
 
       #leftChart {
         height: 265px;
@@ -34,7 +33,7 @@
 
     .secondDiv {
       @include wh(100%, 603px);
-      @include bis('../../assets/images/common/border603.png');
+      @include bis('../../../../assets/images/common/border603.png');
 
       .tableWrap {
         margin: 20px auto 0 auto;
@@ -48,8 +47,8 @@
     }
   }
 
-  .mainRight {
-    width: calc(100% - 526px);
+  .mainCenter {
+    width: calc(100% - 526px - 526px);
     height: 100%;
 
     .centerTop {
@@ -58,24 +57,44 @@
       justify-content: flex-end;
       align-items: center;
       height: 40px;
-      @include bis('../../assets/images/common/mapTitleTop.png');
+      @include bis('../../../../assets/images/common/mapTitleTop.png');
 
       .selectWidth {
         width: 150px;
-        margin-left: 10px;
+        margin: 0 10px 0 80px;
       }
 
       .title {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        // position: absolute;
+        // left: 50%;
+        // top: 50%;
+        // transform: translate(-50%, -50%);
         font-size: 24px;
       }
     }
 
     #mapWrap {
       height: calc(100% - 40px);
+    }
+  }
+
+  .mainRight {
+    .firstDiv {
+      @include wh(100%, 475px);
+      @include bis('../../../../assets/images/common/border301.png');
+
+      #healthOutputChart {
+        height: 365px;
+      }
+    }
+
+    .secondDiv {
+      @include wh(100%, 475px);
+      // @include bis('../../assets/images/common/border301.png');
+
+      #healthIncrementChart {
+        height: 365px;
+      }
     }
   }
 }
