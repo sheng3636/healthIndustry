@@ -40,17 +40,26 @@ export default new Router({
         {
           path: 'hospital',
           name: 'Hospital',
-          component: Hospital
+          component: Hospital,
+          meta: {
+            title: '医疗人员、床位专题'
+          }
         },
         {
           path: 'nursingInstitution',
           name: 'NursingInstitution',
-          component: NursingInstitution
+          component: NursingInstitution,
+          meta: {
+            title: '养老机构专题'
+          }
         },
         {
           path: 'medicalInstitution',
           name: 'MedicalInstitution',
-          component: MedicalInstitution
+          component: MedicalInstitution,
+          meta: {
+            title: '医疗机构专题'
+          }
         }
       ]
     },

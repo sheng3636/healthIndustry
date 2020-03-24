@@ -56,3 +56,5 @@ export const querySolutionDetail = (json) => fetch('solution/querySolutionDetail
 export const searchKeyWord = (json) => fetch('solution/searchKeyWord', json)
 // 自定义网址查询-解决方案
 export const searchInUrls = (json) => fetch('solution/searchInUrls', json)
+// 生成简报
+export const generateWord = (json) => fetch('solution/generateWord', json)

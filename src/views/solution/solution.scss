@@ -44,7 +44,12 @@
       }
       .overViewArea{
         @include wh(100%,100%);
+        overflow-x: hidden;
         overflow-y: auto;
+        .createBtn{
+          display: block;
+          margin: 10px auto;
+        }
       }
     }
     .backgroundWhite{
@@ -79,7 +84,8 @@
     }
 
     .localArea,
-    .netFileWrap {
+    .netFileWrap,
+    .messageArea {
       margin-top: 10px;
       height: 914px;
 
@@ -157,7 +163,49 @@
 
       }
     }
+    .messageWrap {
+      .fileItem {
+        margin: 0 auto 15px auto;
+        width: 90%;
+        height: 80px;
+        border: 1px solid #169BD5;
+        border-radius: 5px;
+        color: #333;
 
+        .fileTitle {
+          padding: 5px 15px;
+          width: 100%;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          word-break: break-all;
+          font-size: 18px;
+          font-weight: bold;
+          color: #fff;
+          box-sizing: border-box;
+        }
+
+        .fileBottom {
+          padding: 10px;
+          @include fj(flex-end);
+          @include sc(14px, #999);
+
+          .overview {
+            text-decoration: underline;
+            cursor: pointer;
+            @include sc(18px, #169BD5);
+          }
+
+          .download {
+            display: block;
+            margin-right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            @include sc(20px, #169BD5);
+          }
+        }
+      }
+    }
     .netFileWrap {
       .searchTitle {
         margin-bottom: 15px;

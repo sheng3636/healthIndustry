@@ -6,6 +6,12 @@
         <p class="backgroundTxt" v-if="localContent === ''"><i class="el-icon-search"></i>您可使用右侧工具栏中在数据库中查找您需要的简报</p>
         <div class="overViewArea" :class="{backgroundWhite:localContent}" v-else v-html="localContent"></div>
       </div>
+      <div class="overviewArea" v-if="searchType === 1">
+        <div class="overViewArea" :class="{backgroundWhite:messageUrl}">
+          <iframe width="99%" height="92%" :src="messageUrl" v-if="messageUrl"></iframe>
+          <el-button type="success" class="createBtn" v-if="messageUrl" @click="downloadMessageFn(messageId)">保存简报</el-button>
+        </div>
+      </div>
       <div class="netArea" v-if="searchType === 2">
         <p class="backgroundTxt" v-if="netUrl === ''"><i class="el-icon-eleme"></i>您可使用右侧工具栏中在网络中查找您需要的信息</p>
         <iframe class="overViewArea" :src="netUrl" scrolling="yes" v-if="netUrl !== ''"></iframe>
@@ -45,8 +51,36 @@
           <!--分页-->
           <div class="paginationWrap">
             <el-pagination :current-page.sync="localCurrentPage" :page-size="localPageSize"
-              layout="total, prev, pager, next, jumper" :pager-count="3" :total="localTotal" @size-change="localSizeChange"
-              @current-change="localCurrentChange" />
+              layout="total, prev, pager, next, jumper" :pager-count="3" :total="localTotal"
+              @size-change="localSizeChange" @current-change="localCurrentChange" />
+          </div>
+        </div>
+      </div>
+      <div class="messageArea" v-if="searchType === 1">
+        <el-form ref="messageAreaForm" :model="messageAreaForm" label-width="80px">
+          <el-form-item label="时间范围">
+            <el-row>
+              <el-col :span="10">
+                <el-date-picker v-model="messageAreaForm.startYear" type="year" value-format="yyyy" placeholder="开始时间" style="width:100%">
+                </el-date-picker>
+              </el-col>
+              <el-col :span="1" style="text-align:center">-</el-col>
+              <el-col :span="10">
+                <el-date-picker v-model="messageAreaForm.endYear" type="year" value-format="yyyy" placeholder="结束时间" style="width:100%">
+                </el-date-picker>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-form>
+        <div class="messageWrap">
+          <div class="fileItem">
+            <h4 class="fileTitle">简报模板1</h4>
+            <!-- <p class="content" v-html="item.content"></p> -->
+            <div class="fileBottom">
+              <!-- <span>{{dateFormat(item.solutionTime)}}</span> -->
+              <i class="download el-icon-view" @click="generateWordFn"></i>
+              <!-- <i class="download el-icon-download" @click="downloadMessageFn(messageId)"></i> -->
+            </div>
           </div>
         </div>
       </div>
@@ -64,7 +98,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="网址" v-if="netForm.searchScope === '1'">
-            <el-input type="textarea" placeholder="网址与网址之间以英文|符号为间隔，例如：https://www.sina.com.cn,https://www.baidu.com"
+            <el-input type="textarea" placeholder="网址与网址之间以英文,符号为间隔，例如：https://www.sina.com.cn,https://www.baidu.com"
               rows="5" v-model="netForm.urlList" style="width:340px;" />
           </el-form-item>
         </el-form>
@@ -90,13 +124,16 @@ import {
   querySolution,
   querySolutionDetail,
   searchKeyWord,
-  searchInUrls
+  searchInUrls,
+  generateWord
 } from '@/api/api'
+import { variableMixin } from '@/config/mixin.js'
 export default {
+  mixins: [variableMixin],
   data() {
     return {
       fullscreenLoading: false, // 是否进行整页加载
-      searchType: 2, // 搜索类型
+      searchType: 0, // 搜索类型
       localAmount: 0, // 本地解决方案总数
       localCurrentPage: 1, // 本地解决方案当前页码
       localPageSize: 3, // 本地解决方案整页大小
@@ -118,12 +155,18 @@ export default {
       netTotal: 0, // 络查询解决方案列表总数
       netForm: {
         // 网络搜索表单
-        keyWord: '病毒',
+        keyWord: '',
         searchScope: '0',
         urlList: ''
       },
       netFiles: [], // 网络搜素文件列表
       netUrl: '',
+      messageUrl:'',
+      messageId:'',
+      messageAreaForm: {
+        startYear: '',
+        endYear: ''
+      },
       pickerOptions: {
         shortcuts: [
           {
@@ -194,7 +237,7 @@ export default {
     // 下载本地文件
     downloadFileFn(id) {
       window.open(
-        `http://t294k52841.wicp.vip/solution/downloadSolution?solutionId=${id}`
+        `${this.baseUrl}solution/downloadSolution?solutionId=${id}`
       )
     },
     // 搜索全网解决方案
@@ -207,7 +250,7 @@ export default {
         )
       })
     },
-    netTypeChange(){
+    netTypeChange() {
       this.netTotal = 0
       this.netFiles = 0
     },
@@ -257,6 +300,22 @@ export default {
       } else {
         this.searchInUrlsFn(this.netForm)
       }
+    },
+    
+    // 生成简报
+    generateWordFn() {
+      generateWord(this.messageAreaForm).then(res => {
+        console.log(res)
+        this.messageUrl = res.data.url
+        this.messageId = res.data.briefId
+      })
+    },
+    // 下载简报
+    downloadMessageFn(id){
+
+      window.open(
+        `${this.baseUrl}solution/downloadWord?briefId=${id}`
+      )
     },
     // 时间格式化
     dateFormat(dateTime) {

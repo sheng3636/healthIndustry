@@ -157,8 +157,8 @@
   .mainCenter {
     width: calc(100% - 526px - 526px);
     height: 100%;
-    .centerTop{
-      // position: relative;
+    .centerTop {
+      position: relative;
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -169,10 +169,10 @@
         margin-left: 10px;
       }
       .title{
-        // position: absolute;
-        // left: 50%;
-        // top: 50%;
-        // transform: translate(-50%, -50%);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         font-size: 24px;
       }
     }

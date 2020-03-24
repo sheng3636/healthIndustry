@@ -113,6 +113,7 @@ export default {
       this.personBedApiFn()
       this.personBedThousandApiFn()
       this.doctorNurseBedApiFn()
+      this.doctorNurseBedMapApiFn()
     },
     toFixedTwo(num,total) {
       let precent = 0

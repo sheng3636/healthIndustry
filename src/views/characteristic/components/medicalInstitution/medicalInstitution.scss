@@ -61,14 +61,14 @@
 
       .selectWidth {
         width: 150px;
-        margin: 0 10px 0 80px;
+        margin-left: 10px;
       }
 
       .title {
-        // position: absolute;
-        // left: 50%;
-        // top: 50%;
-        // transform: translate(-50%, -50%);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         font-size: 24px;
       }
     }

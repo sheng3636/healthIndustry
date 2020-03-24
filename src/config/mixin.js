@@ -1,13 +1,10 @@
 import echarts from 'echarts'
 import 'echarts-gl'
 export const mapMixin = {
-  data() {
-    return {
-    }
-  },
   methods: {
     // 浙江省份地图
     zheJiangMap(dataJson, echartData) {
+      let dataLength = echartData.length
       let myChart = this.$echarts.init(document.getElementById('mapWrap'))
       echarts.registerMap('zhejiang', dataJson)
       let option = {
@@ -16,8 +13,8 @@ export const mapMixin = {
           formatter: '{b}:{c}'
         },
         visualMap: {
-          min: 0,
-          max: 100000,
+          min: echartData[dataLength - 1].value,
+          max: echartData[0].value,
           left: 'left',
           top: 'bottom',
           text: ['多', '少'], // 文本，默认为数值文本
@@ -93,4 +90,13 @@ export const mapMixin = {
       myChart.setOption(option)
     }
   }
+}
+
+export const variableMixin = {
+    data() {
+      return {
+        // baseUrl: 'http://192.168.0.102:8083'
+        baseUrl: 'http://47.103.102.173:8881/MassiveHealthS/'
+      }
+    }
 }

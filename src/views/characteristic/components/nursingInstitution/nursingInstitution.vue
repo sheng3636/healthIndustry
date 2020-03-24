@@ -96,9 +96,6 @@ export default {
     this.medicalInstitutionMapApiFn()
     this.medicalInstitutionLocationApiFn()
     this.medicalInstitutionListApi()
-    this.mapDataApiFn()
-    this.parkAreaOutputApiFn()
-    this.getParkTableFn()
   },
   watch: {
     tableVal(val) {
@@ -106,15 +103,10 @@ export default {
     }
   },
   methods: {
-    projectType() {
-    this.medicalInstitutionMapApiFn()
-    this.medicalInstitutionLocationApiFn()
-    this.medicalInstitutionListApi()
-    },
     otherSearch() {
-      this.mapDataApiFn()
-      this.getParkTableFn()
-      this.parkAreaOutputApiFn()
+      this.medicalInstitutionMapApiFn()
+      this.medicalInstitutionLocationApiFn()
+      this.medicalInstitutionListApi()
     },
     // 查询医疗机构地图数据
     medicalInstitutionMapApiFn() {

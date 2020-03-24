@@ -20,7 +20,7 @@
           </el-table>
           <!--分页-->
           <div class="paginationWrap">
-            <el-pagination :current-page.sync="currentPage" :page-sizes="[10]" :page-size="10"
+            <el-pagination :current-page.sync="currentPage" :pager-count="4" :page-sizes="[10]" :page-size="10"
               layout="total, prev, pager, next, jumper" :total="total" @current-change="handleCurrentChange" />
           </div>
         </div>
