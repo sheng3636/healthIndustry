@@ -79,7 +79,7 @@ export default {
         },
         {
           value: '3',
-          label: '床位'
+          label: '床位 '
         }
       ]
     }
